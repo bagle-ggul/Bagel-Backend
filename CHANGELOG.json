@@ -1,11 +1,39 @@
 {
   "metadata": {
-    "lastUpdated": "2025-09-24T14:47:13Z",
-    "currentVersion": "1.0.4",
+    "lastUpdated": "2025-09-24T15:23:01Z",
+    "currentVersion": "1.0.7",
     "projectType": "spring",
-    "totalReleases": 1
+    "totalReleases": 2
   },
   "releases": [
+    {
+      "version": "1.0.7",
+      "project_type": "spring",
+      "date": "2025-09-24",
+      "pr_number": 37,
+      "raw_summary": "Summary by CodeRabbit\n\nNew Features\n\nSwagger UI에서 서버 목록을 애플리케이션 설정으로 관리하도록 개선하여 여러 환경(로컬/서버)이 미리 노출됩니다.\n\n\nChores\n\n프로젝트 버전을 1.0.7로 업데이트하고 중앙 버전 정보도 동기화했습니다.\nSwagger/OpenAPI 라이브러리를 2.7.0으로 상향해 최신 Spring Boot와의 호환성을 강화했습니다.\n\n\nDocumentation\n\nREADME의 표시 버전을 v1.0.5로 갱신했습니다.",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "Swagger UI에서 서버 목록을 애플리케이션 설정으로 관리하도록 개선하여 여러 환경(로컬/서버)이 미리 노출됩니다."
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "프로젝트 버전을 1.0.7로 업데이트하고 중앙 버전 정보도 동기화했습니다.",
+            "Swagger/OpenAPI 라이브러리를 2.7.0으로 상향해 최신 Spring Boot와의 호환성을 강화했습니다."
+          ]
+        },
+        "documentation": {
+          "title": "Documentation",
+          "items": [
+            "README의 표시 버전을 v1.0.5로 갱신했습니다."
+          ]
+        }
+      }
+    },
     {
       "version": "1.0.4",
       "project_type": "spring",

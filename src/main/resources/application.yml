@@ -38,6 +38,11 @@ springdoc:
     path: /docs/swagger
   api-docs:
     path: /v3/api-docs
+  servers:
+    - url: http://suh-project.synology.me:8093
+      description: 서버 개발 환경
+    - url: http://localhost:8080
+      description: 로컬 개발 환경
 
 management:
   endpoints:
