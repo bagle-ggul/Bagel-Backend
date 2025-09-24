@@ -104,6 +104,7 @@ public class WebSecurityConfig {
     configuration.setAllowedOriginPatterns(
         Arrays.asList(
             "http://suh-project.synology.me:8093",
+            "http://suh-project.synology.me:3006",
             "https://bagel.suhsaechan.me",
             "http://localhost:3000",
             "http://localhost:3001",
