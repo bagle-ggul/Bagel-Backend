@@ -103,11 +103,12 @@ public class WebSecurityConfig {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOriginPatterns(
         Arrays.asList(
-            "https://api.she-is-newyork-bagel.co.kr",
-            "https://www.she-is-newyork-bagel.co.kr",
+            "http://suh-project.synology.me:8093",
+            "https://bagel.suhsaechan.me",
             "http://localhost:3000",
             "http://localhost:3001",
-            "http://localhost:8083",
+            "http://localhost:3006",
+            "http://localhost:8093",
             "http://localhost:8080"
             ));
     configuration.setAllowedMethods(
