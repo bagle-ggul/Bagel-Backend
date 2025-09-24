@@ -82,7 +82,7 @@ jobs:
             echo "환경변수 설정.."
             export PATH=$PATH:/usr/local/bin
             export PW=${{ secrets.SERVER_PASSWORD }}
-            PORT=8092
+            PORT=8093
             CONTAINER_NAME="bagel-back"
 
             echo "컨테이너 이름: $CONTAINER_NAME"
