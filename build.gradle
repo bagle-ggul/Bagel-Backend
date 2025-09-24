@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.suhsaechan'
-version = '1.0.0'
+version = '1.0.1'
 
 java {
     sourceCompatibility = '17'
@@ -62,4 +62,15 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// JAR 파일 이름을 고정시키기 위한 설정
+jar {
+    enabled = false  // plain jar 생성 비활성화
+    archiveClassifier = ''  // classifier 제거
+}
+
+bootJar {
+    archiveFileName = 'app.jar'  // 항상 app.jar로 생성
+    archiveClassifier = ''  // classifier 제거하여 버전 정보 포함되지 않도록 함
 }

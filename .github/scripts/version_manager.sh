@@ -382,43 +382,73 @@ main() {
     local command=${1:-get}
     
     # 설정 읽기
-    read_version_config
+    if [ "${GITHUB_ACTIONS:-}" = "true" ]; then
+        read_version_config 2>/dev/null
+    else
+        read_version_config
+    fi
     
     case "$command" in
         "get")
             # 현재 버전 가져오기 (동기화 포함)
             local version
-            version=$(sync_versions)
-            log_success "현재 버전: $version"
-            echo "$version"
+            if [ "${GITHUB_ACTIONS:-}" = "true" ]; then
+                # GitHub Actions에서는 로그 억제하고 버전만 출력
+                version=$(sync_versions 2>/dev/null)
+                echo "$version"
+            else
+                version=$(sync_versions)
+                log_success "현재 버전: $version"
+                echo "$version"
+            fi
             ;;
         "increment")
-            # 먼저 동기화 수행
-            log_info "버전 동기화 확인"
-            local current_version
-            current_version=$(sync_versions)
-            
-            if ! validate_version "$current_version"; then
-                log_error "잘못된 버전 형식: $current_version"
-                exit 1
+            if [ "${GITHUB_ACTIONS:-}" = "true" ]; then
+                # GitHub Actions에서는 로그 억제
+                local current_version
+                current_version=$(sync_versions 2>/dev/null)
+
+                if ! validate_version "$current_version" 2>/dev/null; then
+                    exit 1
+                fi
+
+                local new_version
+                new_version=$(increment_patch_version "$current_version")
+
+                if [ -z "$new_version" ]; then
+                    exit 1
+                fi
+
+                update_all_versions "$new_version" 2>/dev/null
+                echo "$new_version"
+            else
+                # 먼저 동기화 수행
+                log_info "버전 동기화 확인"
+                local current_version
+                current_version=$(sync_versions)
+
+                if ! validate_version "$current_version"; then
+                    log_error "잘못된 버전 형식: $current_version"
+                    exit 1
+                fi
+
+                # 패치 버전 증가
+                local new_version
+                new_version=$(increment_patch_version "$current_version")
+
+                if [ -z "$new_version" ]; then
+                    log_error "버전 증가 실패"
+                    exit 1
+                fi
+
+                log_info "버전 업데이트: $current_version → $new_version"
+
+                # 모든 버전 파일 업데이트
+                update_all_versions "$new_version"
+
+                log_success "버전 업데이트 완료: $new_version"
+                echo "$new_version"
             fi
-            
-            # 패치 버전 증가
-            local new_version
-            new_version=$(increment_patch_version "$current_version")
-            
-            if [ -z "$new_version" ]; then
-                log_error "버전 증가 실패"
-                exit 1
-            fi
-            
-            log_info "버전 업데이트: $current_version → $new_version"
-            
-            # 모든 버전 파일 업데이트
-            update_all_versions "$new_version"
-            
-            log_success "버전 업데이트 완료: $new_version"
-            echo "$new_version"
             ;;
         "set")
             local new_version=$2

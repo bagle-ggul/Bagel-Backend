@@ -4,7 +4,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # 빌드된 JAR 파일을 복사
-COPY build/libs/dongbanza-0.0.1-SNAPSHOT.jar /app.jar
+COPY build/libs/app.jar /app.jar
 
 # 애플리케이션을 실행하는 명령 설정
 ENTRYPOINT ["java", "-jar", "/app.jar"]
