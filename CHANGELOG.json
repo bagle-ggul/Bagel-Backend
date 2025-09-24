@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "lastUpdated": "2025-09-24T14:47:13Z",
+    "currentVersion": "1.0.4",
+    "projectType": "spring",
+    "totalReleases": 1
+  },
+  "releases": [
+    {
+      "version": "1.0.4",
+      "project_type": "spring",
+      "date": "2025-09-24",
+      "pr_number": 36,
+      "raw_summary": "Summary by CodeRabbit\n\nNew Features\n\nAdded standardized GitHub Discussions and Issue templates (Korean) for announcements, documentation, bugs, features, and design requests to streamline reporting and collaboration.\n\n\nDocumentation\n\nIntroduced a project guide and refined README formatting.\n\n\nChores\n\nImplemented automated version and changelog management tools with CLI commands.\nCentralized versioning configuration and bumped version to 1.0.4.\nEnsured build outputs a consistently named application artifact.\nImproved workflow logs by surfacing errors from version operations.\nUpdated ignore rules to exclude local AI configuration files.",
+      "parsed_changes": {
+        "new_features": {
+          "title": "New Features",
+          "items": [
+            "Added standardized GitHub Discussions and Issue templates (Korean) for announcements, documentation, bugs, features, and design requests to streamline reporting and collaboration."
+          ]
+        },
+        "documentation": {
+          "title": "Documentation",
+          "items": [
+            "Introduced a project guide and refined README formatting."
+          ]
+        },
+        "chores": {
+          "title": "Chores",
+          "items": [
+            "Implemented automated version and changelog management tools with CLI commands.",
+            "Centralized versioning configuration and bumped version to 1.0.4.",
+            "Ensured build outputs a consistently named application artifact.",
+            "Improved workflow logs by surfacing errors from version operations.",
+            "Updated ignore rules to exclude local AI configuration files."
+          ]
+        }
+      }
+    }
+  ]
+}
