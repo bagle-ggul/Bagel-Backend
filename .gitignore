@@ -36,5 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
-### YML
-./src/main/resources/application.yml
+### YML - Environment-specific configurations
+src/main/resources/application-dev.yml
+src/main/resources/application-prod.yml

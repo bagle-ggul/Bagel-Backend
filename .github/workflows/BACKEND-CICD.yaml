@@ -1,56 +1,69 @@
-name: BACKEND CI CD
+name: BAGEL-BE-CICD
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: 코드 체크아웃
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Java 설정
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
           java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
 
-      # Create application.yml directly from the GitHub secret
-      - name: Create application.yml file
-        run: |
-          mkdir -p src/main/resources
-          echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
-          # Verify file was created (without showing contents)
-          ls -la src/main/resources/
-
-      - name: Grant execute permission for gradlew
+      - name: Gradle Wrapper 실행권한 부여
         run: chmod +x gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew clean build -x test
+      - name: application-prod.yml 생성
+        run: |
+          mkdir -p src/main/resources
+          cat << 'EOF' > ./src/main/resources/application-prod.yml
+          ${{ secrets.APPLICATION_PROD_YML }}
+          EOF
 
-      - name: Docker setup
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test -Dspring.profiles.active=prod
+
+      - name: Docker 빌드환경 설정
         uses: docker/setup-buildx-action@v3
 
-      - name: Docker login
+      - name: DockerHub 로그인
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashFiles('Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Docker 이미지 빌드 및 푸시
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bagel-back-container:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/bagel-back-container:cache
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/bagel-back-container:cache,mode=max
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+      - name: Move Docker cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   deploy:
     needs: build
@@ -59,39 +72,39 @@ jobs:
       - name: Deploy
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SUH_SERVER_HOST }}
-          username: ${{ secrets.SUH_SERVER_USER }}
-          password: ${{ secrets.SUH_SERVER_PASSWORD }}
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
           port: 2022
           script: |
             set -e
-            # Get current Seoul time (KST, UTC+9)
-            SEOUL_TIME=$(TZ='Asia/Seoul' date '+%Y-%m-%d %H:%M:%S')
-            # Set PATH to include Docker binaries
-            export PATH=$PATH:/usr/local/bin:/usr/bin:/volume1/@appstore/Docker/usr/bin
-            # Store password for sudo commands
-            export PW=${{ secrets.SUH_SERVER_PASSWORD }}
-            
-            # Check Docker availability
-            echo "Docker path check:"
-            which docker || echo "Docker not found"
-            echo "Docker version:"
-            echo $PW | sudo -S docker --version || echo "Docker version check failed"
-            
-            # Pull latest image
+
+            echo "환경변수 설정.."
+            export PATH=$PATH:/usr/local/bin
+            export PW=${{ secrets.SERVER_PASSWORD }}
+            PORT=8092
+            CONTAINER_NAME="bagel-back"
+
+            echo "컨테이너 이름: $CONTAINER_NAME"
+            echo "포트: $PORT"
+
+            echo "도커 이미지 풀 : ${{ secrets.DOCKERHUB_USERNAME }}/bagel-back-container:latest"
             echo $PW | sudo -S docker pull ${{ secrets.DOCKERHUB_USERNAME }}/bagel-back-container:latest
-            
-            # Stop and remove existing container if it exists
-            echo $PW | sudo -S docker stop bagel-back || true
-            echo $PW | sudo -S docker rm bagel-back || true
-            
-            # Run new container with environment variables
-            echo $PW | sudo -S docker run -d -p 8093:8080 --name bagel-back \
-              -e DB_HOST='suh-project.synology.me' \
-              -e DB_NAME=${{ secrets.DB_NAME }} \
-              -e DB_USERNAME='kimchi' \
-              -e DB_PASSWORD='Kimchi123@' \
-              -e JWT_SECRET_KEY='jX7NP2k5qW8zT1aR3bY6cL9dF4mG0hS4vZ5xC8pQ7w2E3r6t' \
-              -e SEOUL_TIME="$SEOUL_TIME" \
+
+            echo "컨테이너 $CONTAINER_NAME 존재 여부 확인 중..."
+            if sudo docker ps -a --format '{{.Names}}' | grep -Eq "^${CONTAINER_NAME}\$"; then
+              echo "컨테이너 $CONTAINER_NAME 이(가) 존재합니다. 중지 및 삭제 중..."
+              echo $PW | sudo -S docker rm -f $CONTAINER_NAME
+              echo "컨테이너 $CONTAINER_NAME 이(가) 삭제되었습니다."
+            else
+              echo "존재하는 컨테이너 $CONTAINER_NAME 이(가) 없습니다."
+            fi
+
+            echo "새로운 컨테이너 $CONTAINER_NAME 실행 중..."
+            echo $PW | sudo -S docker run -d -p ${PORT}:8080 --name $CONTAINER_NAME \
               -e TZ=Asia/Seoul \
+              -e "SPRING_PROFILES_ACTIVE=prod" \
+              -v /etc/localtime:/etc/localtime:ro \
               ${{ secrets.DOCKERHUB_USERNAME }}/bagel-back-container:latest
+
+            echo "배포가 성공적으로 완료되었습니다."

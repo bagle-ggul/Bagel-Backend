@@ -1,46 +1,35 @@
-server:
-  port: 8080
-
 spring:
-  datasource:
-    url: jdbc:postgresql://${DB_HOST}:5430/${DB_NAME}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-
   jpa:
     open-in-view: false
     generate-ddl: true
-    hibernate:
-      ddl-auto: update
     properties:
       hibernate:
-        show_sql: true
         format_sql: true
 
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
 
-  jwt:
-    secret-key: ${JWT_SECRET_KEY}
-    access-expiration-time: 600000      # 10 분
-    refresh-expiration-time: 604800000  # 7 일
+suhapilog:
+  enabled: true
+  github:
+    base-url: "https://github.com/bagle-ggul/Bagel-Backend/issues"
+  storage:
+    path: "./github-issues" #기본값
+  default-author: "Author 누락됨!"
 
-#   필요한 경우 Redis·MongoDB·AWS 설정은 주석 해제 후 사용
-# spring:
-#   data:
-#     redis:
-#       host: ${REDIS_HOST}
-#       port: 6379
-#   cloud:
-#     aws:
-#       ...
-
-logging:
-  level:
-    org.springframework.web: DEBUG
-    org.springframework.security: DEBUG
+suh-logger:
+  enabled: true                    # true(기본값), false
+  pretty-print-json: true         # false(기본값), true
+  max-response-body-size: 4096     # 양의 정수 (기본값: 4096)
+  exclude-patterns:                # 문자열 배열 (기본값: 빈 배열)
+  #    - "/actuator"                  # Spring Boot Actuator 제외
+  excluded-classes:                # 문자열 배열 (기본값: 빈 배열)
+  #    - "org.springframework.web.multipart.MultipartFile"
+  masking:
+    header: true                   # true(기본값), false - 민감한 헤더 마스킹 여부
+  header:
+    enabled: false                 # false(기본값), true - 전역 헤더 로깅 활성화 여부
 
 springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
