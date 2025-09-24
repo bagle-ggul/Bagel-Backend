@@ -101,19 +101,12 @@ public class WebSecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOriginPatterns(
-        Arrays.asList(
-            "https://api.she-is-newyork-bagel.co.kr",
-            "https://www.she-is-newyork-bagel.co.kr",
-            "http://localhost:3000",
-            "http://localhost:3001",
-            "http://localhost:8083",
-            "http://localhost:8080"
-            ));
+    configuration.setAllowedOriginPatterns(Collections.singletonList("*")); // 모든 origin 허용
     configuration.setAllowedMethods(
         Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
     configuration.setAllowCredentials(true);
     configuration.setAllowedHeaders(Collections.singletonList("*"));
+    configuration.setExposedHeaders(Arrays.asList("Authorization")); // Authorization 헤더 노출
     configuration.setMaxAge(3600L);
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
