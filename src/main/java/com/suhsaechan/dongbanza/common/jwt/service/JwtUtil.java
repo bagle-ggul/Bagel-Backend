@@ -54,9 +54,6 @@ public class JwtUtil {
     Map<String, Object> headers = new HashMap<>();
     headers.put("typ", "JWT");
 
-    //TODO:
-    log.info("JwtUtil : createToken :"+ ROLE+" "+ customUserDetails.getMember().getRole());
-
     return Jwts.builder()
         .header()
         .add(headers)
@@ -93,12 +90,11 @@ public class JwtUtil {
 
   // 토큰 기반 -> 인증 정보 가져옴 // 누구의 토큰인가
   public Authentication getAuthentication(String token) {
+    // 클레임 전문을 로깅하면 매 요청마다 토큰 주체·권한이 그대로 남아 로그 노출·소음이 커진다
     Claims claims = getClaims(token);
-    log.info("JwtUtil : getAuthentication :" + claims.toString());
 
     Set<SimpleGrantedAuthority> authorities
         = Collections.singleton(new SimpleGrantedAuthority(claims.get(ROLE, String.class)));
-    log.info("JwtUtil : getAuthentication :"+ ROLE+" "+ authorities.size());
 
     Member member = Member.builder()
         .id(Long.valueOf(claims.getSubject()))

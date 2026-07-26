@@ -34,8 +34,7 @@ public class MemberDto {
 
   private String gameProgress;
 
-  private String refreshToken;
-
+  // 리프레시 토큰은 refresh_token 테이블이 정본이며 회원 응답에 노출할 이유가 없어 제거함
   public static MemberDto from(Member member){
     return MemberDto.builder()
         .id(member.getId())
@@ -50,7 +49,6 @@ public class MemberDto {
         .mbti(member.getMbti())
         .totalRegressionCount(member.getTotalRegressionCount() != null ? member.getTotalRegressionCount() : 0)
         .gameProgress(member.getGameProgress())
-        .refreshToken(member.getRefreshToken())
         .build();
   }
 }

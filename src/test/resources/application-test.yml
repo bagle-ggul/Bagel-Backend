@@ -1,0 +1,27 @@
+# 테스트 전용 설정
+# 운영 설정(application-prod.yml)은 Actions 시크릿으로 주입되어 로컬·CI에 존재하지 않으므로,
+# 컨텍스트 로딩 테스트가 외부 의존 없이 돌 수 있도록 인메모리 DB와 더미 키를 사용한다.
+spring:
+  datasource:
+    url: jdbc:h2:mem:bagel;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: false
+
+  jwt:
+    # 실제 키가 아닌 테스트 전용 더미 값 (HS384 최소 길이 충족용)
+    secret-key: dGVzdC1vbmx5LWtleS1ub3QtdXNlZC1pbi1wcm9kdWN0aW9uLXBhZGRpbmctdG8tNjQtYnl0ZXMtbG9uZw==
+    access-expiration-time: 600000
+    refresh-expiration-time: 604800000
+
+logging:
+  level:
+    org.springframework.web: WARN
+    org.springframework.security: WARN

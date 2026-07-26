@@ -34,6 +34,8 @@ dependencies {
     // 테스트
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    // 컨텍스트 로딩 테스트가 운영 DB 없이도 돌도록 인메모리 DB 사용
+    testRuntimeOnly 'com.h2database:h2'
 
     // Swagger/OpenAPI (Spring Boot 3.4.x 호환 버전)
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'

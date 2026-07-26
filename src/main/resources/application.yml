@@ -48,4 +48,8 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        # "*"는 /actuator/env, /actuator/beans 등 내부 정보까지 노출하므로 필요한 것만 연다
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: never

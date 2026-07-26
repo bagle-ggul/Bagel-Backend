@@ -28,6 +28,8 @@ import java.time.LocalDate;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
 
+  public static final String DEFAULT_CHARACTER_NAME = "주인공";
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -37,15 +39,15 @@ public class Member extends BaseEntity {
 
   private String password;
 
-  private String characterName = "주인공";
+  // @Builder.Default가 없으면 Lombok이 초기값을 무시해 빌더 경유 시 null이 저장된다
+  @Builder.Default
+  private String characterName = DEFAULT_CHARACTER_NAME;
 
   @Enumerated(EnumType.STRING)
   private MemberRole role;
 
   @Enumerated(EnumType.STRING)
   private MemberStatus status;
-
-  private String refreshToken;
 
   @Setter
   private String profileImageUrl;
@@ -56,15 +58,13 @@ public class Member extends BaseEntity {
 
   private String mbti;
 
-  private Integer totalRegressionCount = 0; // 기본값 설정
+  @Builder.Default
+  private Integer totalRegressionCount = 0;
 
-  private Integer totalScore = 0; // 기본값 설정
+  @Builder.Default
+  private Integer totalScore = 0;
 
   private String gameProgress;
-
-  public void updateRefreshToken(String refreshToken){
-    this.refreshToken = refreshToken;
-  }
 
   public void increaseRegressionCount() {
     if (this.totalRegressionCount == null) {

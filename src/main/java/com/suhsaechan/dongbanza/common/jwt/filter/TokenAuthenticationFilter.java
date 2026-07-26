@@ -1,5 +1,6 @@
 package com.suhsaechan.dongbanza.common.jwt.filter;
 
+import com.suhsaechan.dongbanza.common.config.SecurityWhitelist;
 import com.suhsaechan.dongbanza.common.jwt.service.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,19 +22,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
   private final JwtUtil jwtUtil;
   private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
-  // Security와 JWT 인증 생략하는 URI
-  private static final String[] WHITELIST = {
-      "/", // 기본화면
-      "/api/signup", // 회원가입
-      "/api/login", // 로그인
-      "/docs/**", // Swagger
-      "/v3/api-docs/**", // Swagger
-      "/api/token", // Access Token 재발급
-      "/actuator/**", // Prometheus 엔드포인트 허용
-      "/favicon.ico", // Prometheus
-      "/targets", // Prometheus
-      "/api/test"
-  };
+  // 인가 규칙(WebSecurityConfig)과 동일한 목록을 공유해 두 곳이 어긋나지 않게 한다
+  private static final String[] WHITELIST = SecurityWhitelist.PATHS;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request,
@@ -46,7 +36,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     // WHITELIST URL 인 경우 -> JWT Token Validation 하지않는다.
     if (Arrays.stream(WHITELIST)
         .anyMatch(whiteListUri -> antPathMatcher.match(whiteListUri, URI))) {
-      logger.info("Whitelisted URI: " + URI);
+      log.debug("Whitelisted URI: {}", URI);
       // Token 검사 생략
       filterChain.doFilter(request, response);
       return;
@@ -57,7 +47,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     // 토큰 검사 통과 로직
     if (jwtUtil.validateToken(token)) {
-      log.info("Token 검사로직 통과: " + URI );
+      log.debug("Token 검사로직 통과: {}", URI);
       Authentication authentication = jwtUtil.getAuthentication(token);
       SecurityContextHolder.getContext().setAuthentication(authentication);
     }
