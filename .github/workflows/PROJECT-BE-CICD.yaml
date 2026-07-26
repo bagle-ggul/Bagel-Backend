@@ -101,7 +101,10 @@ jobs:
             fi
 
             echo "새로운 컨테이너 $CONTAINER_NAME 실행 중..."
+            # --restart unless-stopped: NAS 재부팅 시 컨테이너가 자동 복구되도록 보장
+            # (미지정 시 restart policy가 no로 생성되어 재부팅 후 백엔드가 영구 정지됨)
             echo $PW | sudo -S docker run -d -p ${PORT}:8080 --name $CONTAINER_NAME \
+              --restart unless-stopped \
               -e TZ=Asia/Seoul \
               -e "SPRING_PROFILES_ACTIVE=prod" \
               -v /etc/localtime:/etc/localtime:ro \
