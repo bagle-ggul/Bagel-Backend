@@ -17,9 +17,15 @@ public class GlobalExceptionHandler {
   // 커스텀 예외 처리
   @ExceptionHandler(CustomException.class)
   public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
-    log.error("{}", e.getMessage());
+    HttpStatus status = e.getErrorCode().getStatus();
+    // 중복 이메일 같은 정상적인 클라이언트 오류(4xx)까지 ERROR로 남으면 진짜 장애가 묻힌다
+    if (status.is5xxServerError()) {
+      log.error("{}", e.getMessage());
+    } else {
+      log.warn("{}", e.getMessage());
+    }
     ErrorResponse errorResponse = new ErrorResponse(e.getErrorCode(), e.getMessage());
-    return ResponseEntity.status(e.getErrorCode().getStatus()).body(errorResponse);
+    return ResponseEntity.status(status).body(errorResponse);
   }
 
   // 입력 검증 실패는 클라이언트 잘못이므로 500이 아닌 400으로 응답한다

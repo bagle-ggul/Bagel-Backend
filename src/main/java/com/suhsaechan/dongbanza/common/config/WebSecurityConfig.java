@@ -14,13 +14,11 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -35,11 +33,9 @@ public class WebSecurityConfig {
   private final static String MEMBER = "USER"; // Spring 기본 유저
   private final static String ADMIN = "ADMIN"; // Spring 기본 관리자
 
-  @Bean
-  public WebSecurityCustomizer configure() {
-    return (web) -> web.ignoring()
-        .requestMatchers(new AntPathRequestMatcher("/static/**"));
-  }
+  // web.ignoring("/static/**")은 제거함.
+  // static/ 아래 리소스는 /static/ 경로가 아닌 루트(/favicon.ico)로 서빙되어 매칭되는 대상이 없었고,
+  // 필터 체인 자체를 우회시키는 방식이라 Spring이 기동 시 경고를 남기고 있었다.
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
