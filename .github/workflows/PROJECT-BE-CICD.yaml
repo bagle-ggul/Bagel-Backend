@@ -111,3 +111,63 @@ jobs:
               ${{ secrets.DOCKERHUB_USERNAME }}/bagel-back-container:latest
 
             echo "배포가 성공적으로 완료되었습니다."
+
+  # 파이프라인 실패를 자동으로 이슈화한다
+  # 2025-11-05 빌드 실패가 알림 부재로 8개월간 방치되어 프로덕션이 중단된 사례가 있어 추가함
+  notify-failure:
+    needs: [build, deploy]
+    # 스킵된 잡이 needs에 섞여도 확실히 실행되도록 always() + 결과 명시 비교를 쓴다
+    if: always() && (needs.build.result == 'failure' || needs.deploy.result == 'failure')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: 배포 실패 이슈 생성 또는 댓글 추가
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const title = '🚨 [배포실패] BAGEL-BE-CICD 파이프라인 실패';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const buildResult = '${{ needs.build.result }}';
+            const deployResult = '${{ needs.deploy.result }}';
+            const body = [
+              `- **커밋**: ${context.sha}`,
+              `- **브랜치**: \`${context.ref}\``,
+              `- **build 잡**: ${buildResult}`,
+              `- **deploy 잡**: ${deployResult}`,
+              `- **실행 로그**: ${runUrl}`,
+              '',
+              '배포가 실패해 프로덕션에 반영되지 않았습니다.',
+              '**주의**: 이 상태를 방치하면 서버 재시작 시 구버전으로 되돌아가거나 복구가 불가능해집니다.',
+              '원인을 조치한 뒤 이 이슈를 닫아주세요.',
+            ].join('\n');
+
+            // 실패가 반복될 때 이슈가 계속 쌓이지 않도록 기존 열린 이슈에 댓글로 누적한다
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'bug',
+              per_page: 100,
+            });
+            const duplicated = existing.data.find(issue => issue.title === title);
+
+            if (duplicated) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: duplicated.number,
+                body: `배포가 다시 실패했습니다.\n\n${body}`,
+              });
+              core.notice(`기존 이슈 #${duplicated.number}에 실패 내역을 추가했습니다.`);
+            } else {
+              const created = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['bug'],
+              });
+              core.notice(`배포 실패 이슈 #${created.data.number}를 생성했습니다.`);
+            }

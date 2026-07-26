@@ -8,6 +8,7 @@ import com.suhsaechan.dongbanza.member.dto.request.MemberSignUpForm;
 import com.suhsaechan.dongbanza.member.dto.response.MemberDto;
 import com.suhsaechan.dongbanza.member.dto.response.MemberLoginResponse;
 import com.suhsaechan.dongbanza.member.service.MemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class MemberController implements MemberControllerDocs {
   @PostMapping("login")
   @LogMonitoringInvocation
   public ResponseEntity<MemberLoginResponse> login(
-      @RequestBody MemberLoginForm form
+      @Valid @RequestBody MemberLoginForm form
   ) {
     MemberLoginResponse memberLoginResponse = memberService.login(form);
     return ResponseEntity.ok()
@@ -42,7 +43,7 @@ public class MemberController implements MemberControllerDocs {
   @PostMapping("/signup")
   @LogMonitoringInvocation
   public ResponseEntity<MemberDto> signup(
-      @RequestBody MemberSignUpForm form
+      @Valid @RequestBody MemberSignUpForm form
   ) {
     MemberDto savedMember = memberService.save(form);
     return ResponseEntity.ok(savedMember);
