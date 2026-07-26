@@ -19,8 +19,8 @@ configurations {
 
 repositories {
     mavenCentral()
-    // Suh-Nexus
-    maven {url "https://nexus.suhsaechan.me/repository/maven-releases/"
+    // Suh-Nexus (.me 도메인 DNS 소멸로 .kr로 전환 — 동일 Nexus 인스턴스)
+    maven {url "https://nexus.suhsaechan.kr/repository/maven-releases/"
     }
 }
 
