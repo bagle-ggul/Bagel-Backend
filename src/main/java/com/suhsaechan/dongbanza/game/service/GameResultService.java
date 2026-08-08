@@ -8,6 +8,7 @@ import com.suhsaechan.dongbanza.game.dto.response.GameRankingDto;
 import com.suhsaechan.dongbanza.game.dto.response.GameRankingPageDto;
 import com.suhsaechan.dongbanza.game.dto.response.GameResultResponse;
 import com.suhsaechan.dongbanza.game.repository.GameResultRepository;
+import com.suhsaechan.dongbanza.member.domain.constants.GameProgress;
 import com.suhsaechan.dongbanza.member.domain.entity.Member;
 import com.suhsaechan.dongbanza.member.repository.MemberRepository;
 import java.util.List;
@@ -41,15 +42,14 @@ public class GameResultService {
 
     // 멤버 총점수 업데이트
     member.updateScore(request.getFinalScore());
-    member.updateGameProgress("GAME_END");
+    member.updateGameProgress(GameProgress.GAME_END);
 
     if(!request.getSuccess()){
       // member 총회귀횟수 업데이트
       member.increaseRegressionCount();
     }
 
-    Member savedMember = memberRepository.save(member);
-    System.out.println(savedMember);
+    memberRepository.save(member);
     return GameResultResponse.from(gameResult);
   }
 

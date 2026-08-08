@@ -1,6 +1,7 @@
 package com.suhsaechan.dongbanza.member.domain.entity;
 
 import com.suhsaechan.dongbanza.common.entity.BaseEntity;
+import com.suhsaechan.dongbanza.member.domain.constants.GameProgress;
 import com.suhsaechan.dongbanza.member.domain.constants.MemberRole;
 import com.suhsaechan.dongbanza.member.domain.constants.MemberStatus;
 import jakarta.persistence.Column;
@@ -64,7 +65,10 @@ public class Member extends BaseEntity {
   @Builder.Default
   private Integer totalScore = 0;
 
-  private String gameProgress;
+  // 상수명이 그대로 저장되므로 기존 varchar 데이터("NOT_STARTED"/"GAME_END")와 호환된다
+  @Enumerated(EnumType.STRING)
+  @Builder.Default
+  private GameProgress gameProgress = GameProgress.NOT_STARTED;
 
   public void increaseRegressionCount() {
     if (this.totalRegressionCount == null) {
@@ -80,7 +84,7 @@ public class Member extends BaseEntity {
     this.totalScore += value;
   }
 
-  public void updateGameProgress(String progress) {
+  public void updateGameProgress(GameProgress progress) {
     this.gameProgress = progress;
   }
 }

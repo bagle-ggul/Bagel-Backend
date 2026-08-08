@@ -10,6 +10,7 @@ import com.suhsaechan.dongbanza.common.exception.ErrorCode;
 import com.suhsaechan.dongbanza.common.exception.api.MemberException;
 import com.suhsaechan.dongbanza.common.jwt.service.JwtUtil;
 import com.suhsaechan.dongbanza.common.jwt.service.TokenService;
+import com.suhsaechan.dongbanza.member.domain.constants.GameProgress;
 import com.suhsaechan.dongbanza.member.domain.entity.Member;
 import com.suhsaechan.dongbanza.member.dto.request.MemberSignUpForm;
 import com.suhsaechan.dongbanza.member.dto.response.MemberDto;
@@ -102,6 +103,18 @@ class MemberServiceTest {
 
     assertThat(saved.getTotalScore()).isZero();
     assertThat(saved.getTotalRegressionCount()).isZero();
+  }
+
+  @Test
+  @DisplayName("게임 진행 상태는 NOT_STARTED로 초기화된다")
+  void initialisesGameProgressToNotStarted() throws Exception {
+    when(memberRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+    when(passwordEncoder.encode(anyString())).thenReturn("encoded");
+    when(memberRepository.save(any(Member.class))).thenAnswer(inv -> inv.getArgument(0));
+
+    MemberDto saved = memberService.save(form("user@example.com", "pw", null));
+
+    assertThat(saved.getGameProgress()).isEqualTo(GameProgress.NOT_STARTED);
   }
 
   @Test

@@ -5,6 +5,7 @@ import com.suhsaechan.dongbanza.common.exception.api.MemberException;
 import com.suhsaechan.dongbanza.common.jwt.dto.CustomUserDetails;
 import com.suhsaechan.dongbanza.common.jwt.service.JwtUtil;
 import com.suhsaechan.dongbanza.common.jwt.service.TokenService;
+import com.suhsaechan.dongbanza.member.domain.constants.GameProgress;
 import com.suhsaechan.dongbanza.member.domain.constants.MemberRole;
 import com.suhsaechan.dongbanza.member.domain.constants.MemberStatus;
 import com.suhsaechan.dongbanza.member.domain.entity.Member;
@@ -53,7 +54,7 @@ public class MemberService {
             .gender(form.getGender())
             .mbti(form.getMbti())
             .totalRegressionCount(0) // 초기 회귀 횟수는 0으로 설정
-            .gameProgress("NOT_STARTED") // 초기 게임 진행 상태는 'NOT_STARTED'로 설정
+            .gameProgress(GameProgress.NOT_STARTED) // 초기 게임 진행 상태
             .build()
         )
     );
