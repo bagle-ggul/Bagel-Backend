@@ -28,7 +28,7 @@ public class CustomUserDetails implements UserDetails {
     return "";
   }
 
-  // 닉네임
+  // JWT subject: 회원 id (닉네임은 중복 허용이라 식별자로 쓰지 않음)
   @Override
   public String getUsername() {
     return member.getId().toString();
