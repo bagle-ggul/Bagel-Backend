@@ -22,9 +22,10 @@ public class CustomUserDetails implements UserDetails {
     return Collections.singletonList(new SimpleGrantedAuthority(member.getRole().getKey()));
   }
 
+  // 비밀번호 인증을 쓰지 않는 게스트 구조라 빈 값 반환 (UserDetails 규약상 메서드는 필요)
   @Override
   public String getPassword() {
-    return member.getPassword();
+    return "";
   }
 
   // 닉네임

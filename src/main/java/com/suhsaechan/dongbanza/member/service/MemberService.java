@@ -9,13 +9,11 @@ import com.suhsaechan.dongbanza.member.domain.constants.GameProgress;
 import com.suhsaechan.dongbanza.member.domain.constants.MemberRole;
 import com.suhsaechan.dongbanza.member.domain.constants.MemberStatus;
 import com.suhsaechan.dongbanza.member.domain.entity.Member;
-import com.suhsaechan.dongbanza.member.dto.request.MemberLoginForm;
-import com.suhsaechan.dongbanza.member.dto.request.MemberSignUpForm;
+import com.suhsaechan.dongbanza.member.dto.request.GuestStartForm;
+import com.suhsaechan.dongbanza.member.dto.response.GuestStartResponse;
 import com.suhsaechan.dongbanza.member.dto.response.MemberDto;
-import com.suhsaechan.dongbanza.member.dto.response.MemberLoginResponse;
 import com.suhsaechan.dongbanza.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -25,60 +23,45 @@ import org.springframework.util.StringUtils;
 public class MemberService {
 
   private final MemberRepository memberRepository;
-  private final BCryptPasswordEncoder passwordEncoder;
   private final JwtUtil jwtUtil;
   private final TokenService tokenService;
+  private final NicknameGenerator nicknameGenerator;
 
+  /**
+   * 게스트 시작: 닉네임 확정 > 회원 생성 > 토큰 발급
+   * 가입·로그인 없이 닉네임과 MBTI만으로 플레이 계정 생성 (닉네임 중복 허용)
+   */
   @Transactional
-  public MemberDto save(MemberSignUpForm form) {
-    // 이메일 중복 확인
-    if (memberRepository.findByEmail(form.getEmail()).isPresent()) {
-      throw new MemberException(ErrorCode.EMAIL_ALREADY_EXISTS);
-    }
-
-    // 빌더에 null을 명시적으로 넘기면 @Builder.Default가 무시되므로 여기서 기본값을 채운다
+  public GuestStartResponse startAsGuest(GuestStartForm form) {
+    // 닉네임 확정 (생략 시 자동 생성)
     String characterName = StringUtils.hasText(form.getCharacterName())
-        ? form.getCharacterName()
-        : Member.DEFAULT_CHARACTER_NAME;
+        ? form.getCharacterName().trim()
+        : nicknameGenerator.generate();
 
-    return MemberDto.from(
-        memberRepository.save(Member.builder()
-            .email(form.getEmail())
-            .password(passwordEncoder.encode(form.getPassword()))
-            .characterName(characterName)
-            .role(MemberRole.USER)
-            .status(MemberStatus.ACTIVE)
-            .profileImageUrl(null)
-            .totalScore(0) // 초기 호감도는 0으로 설정
-            .birthDate(form.getBirthDate())
-            .gender(form.getGender())
-            .mbti(form.getMbti())
-            .totalRegressionCount(0) // 초기 회귀 횟수는 0으로 설정
-            .gameProgress(GameProgress.NOT_STARTED) // 초기 게임 진행 상태
-            .build()
-        )
-    );
-  }
+    // 회원 생성
+    Member member = memberRepository.save(Member.builder()
+        .characterName(characterName)
+        .mbti(form.getMbti())
+        .role(MemberRole.USER)
+        .status(MemberStatus.ACTIVE)
+        .totalScore(0) // 초기 호감도는 0으로 설정
+        .totalRegressionCount(0) // 초기 회귀 횟수는 0으로 설정
+        .gameProgress(GameProgress.NOT_STARTED) // 초기 게임 진행 상태
+        .build());
 
-  // 로그인은 리프레시 토큰 생성·저장까지 수행하므로 한 트랜잭션으로 묶는다
-  @Transactional
-  public MemberLoginResponse login(MemberLoginForm form) {
-    // 아이디 검증
-    Member member = memberRepository.findByEmail(form.getEmail())
-        .orElseThrow(() -> new MemberException(ErrorCode.EMAIL_NOT_FOUND));
-
-    // 비밀번호 검증
-    if (!passwordEncoder.matches(form.getPassword(), member.getPassword())) {
-      throw new MemberException(ErrorCode.INVALID_PASSWORD);
-    }
-
+    // 토큰 발급 (리프레시 토큰 저장 포함이라 한 트랜잭션으로 묶음)
     String accessToken = jwtUtil.createAccessToken(
         CustomUserDetails.builder()
             .member(member)
             .build());
     String refreshToken = tokenService.createRefreshToken(member);
 
-    return MemberLoginResponse.from(member, accessToken, refreshToken);
+    return GuestStartResponse.from(member, accessToken, refreshToken);
+  }
+
+  // 닉네임 입력 화면의 초기값 제안 (저장하지 않음)
+  public String suggestNickname() {
+    return nicknameGenerator.generate();
   }
 
   @Transactional(readOnly = true)

@@ -15,8 +15,7 @@ public final class SecurityWhitelist {
 
   public static final String[] PATHS = {
       "/",                    // 기본 화면
-      "/api/signup",          // 회원가입
-      "/api/login",           // 로그인
+      "/api/guest/**",        // 게스트 시작, 닉네임 추천 (가입·로그인 없이 진입)
       "/api/token",           // Access Token 재발급
       "/docs/**",             // Swagger UI
       "/v3/api-docs/**",      // Swagger 스펙
