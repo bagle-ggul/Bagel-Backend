@@ -4,7 +4,6 @@ import com.suhsaechan.dongbanza.common.entity.BaseEntity;
 import com.suhsaechan.dongbanza.member.domain.constants.GameProgress;
 import com.suhsaechan.dongbanza.member.domain.constants.MemberRole;
 import com.suhsaechan.dongbanza.member.domain.constants.MemberStatus;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,12 +15,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDate;
-
-@ToString(exclude = "password")
+@ToString
 @Entity
 @Builder
 @Getter
@@ -35,11 +31,6 @@ public class Member extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(unique = true)
-  private String email;
-
-  private String password;
-
   // @Builder.Default가 없으면 Lombok이 초기값을 무시해 빌더 경유 시 null이 저장된다
   @Builder.Default
   private String characterName = DEFAULT_CHARACTER_NAME;
@@ -49,13 +40,6 @@ public class Member extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   private MemberStatus status;
-
-  @Setter
-  private String profileImageUrl;
-
-  private LocalDate birthDate;
-
-  private String gender;
 
   private String mbti;
 

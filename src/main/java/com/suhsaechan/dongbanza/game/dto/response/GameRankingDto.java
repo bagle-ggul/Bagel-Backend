@@ -14,7 +14,7 @@ public class GameRankingDto {
   private String mbti;
   private LocalDateTime gameDate;
   private Integer gamePlaySeconds;
-  private String memberEmail;
+  private Long gameResultId; // 목록 key 용도 (이메일 대체)
   private String details;
 
   public static GameRankingDto from(Member member, GameResult gameResult) {
@@ -25,7 +25,7 @@ public class GameRankingDto {
         .gameDate(gameResult.getGameDate())
         .gamePlaySeconds(gameResult.getGamePlaySeconds())
         .details(gameResult.getDetails())
-        .memberEmail(member.getEmail())
+        .gameResultId(gameResult.getId())
         .build();
   }
 }
