@@ -3,7 +3,6 @@ package com.suhsaechan.dongbanza.member.domain.entity;
 import com.suhsaechan.dongbanza.common.entity.BaseEntity;
 import com.suhsaechan.dongbanza.member.domain.constants.GameProgress;
 import com.suhsaechan.dongbanza.member.domain.constants.MemberRole;
-import com.suhsaechan.dongbanza.member.domain.constants.MemberStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -37,9 +36,6 @@ public class Member extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   private MemberRole role;
-
-  @Enumerated(EnumType.STRING)
-  private MemberStatus status;
 
   private String mbti;
 

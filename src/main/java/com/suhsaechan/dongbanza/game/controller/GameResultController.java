@@ -40,8 +40,7 @@ public class GameResultController implements GameResultControllerDocs {
   @GetMapping("/ranking")
   public ResponseEntity<GameRankingPageDto> getGameRanking(
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size,
-      @AuthenticationPrincipal CustomUserDetails userDetails
+      @RequestParam(defaultValue = "10") int size
   ) {
     GameRankingPageDto gameRankingPageDto = gameResultService.getGameRankingList(page, size);
     return ResponseEntity.ok(gameRankingPageDto);

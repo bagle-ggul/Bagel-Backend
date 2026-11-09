@@ -17,6 +17,7 @@ public final class SecurityWhitelist {
       "/",                    // 기본 화면
       "/api/guest/**",        // 게스트 시작, 닉네임 추천 (가입·로그인 없이 진입)
       "/api/token",           // Access Token 재발급
+      "/api/game/ranking",    // 랭킹 조회 (시작 전 홈 화면에서도 노출)
       "/docs/**",             // Swagger UI
       "/v3/api-docs/**",      // Swagger 스펙
       "/actuator/health",     // 헬스체크 (모니터링·배포 검증용)

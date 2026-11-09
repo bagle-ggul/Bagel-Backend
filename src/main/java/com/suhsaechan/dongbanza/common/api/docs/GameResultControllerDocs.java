@@ -27,7 +27,7 @@ public interface GameResultControllerDocs {
   ResponseEntity<GameResultResponse> saveGameResult(@RequestBody GameResultRequest gameResultRequest,
       @AuthenticationPrincipal CustomUserDetails userDetails);
 
-  @Operation(summary = "내 게임 결과 조회", description = "로그인된 사용자의 게임 결과를 조회한다.",
+  @Operation(summary = "내 게임 결과 조회", description = "게스트 토큰 주인의 게임 결과를 조회한다.",
       responses = {
           @ApiResponse(responseCode = "200", description = "게임 결과 조회 성공",
               content = @Content(schema = @Schema(implementation = GameResultResponse.class))),
@@ -37,7 +37,7 @@ public interface GameResultControllerDocs {
   ResponseEntity<List<GameResultResponse>> getMyGameResults(
       @AuthenticationPrincipal CustomUserDetails userDetails);
 
-  @Operation(summary = "게임 결과 삭제", description = "로그인된 사용자의 특정 게임 결과를 삭제한다.",
+  @Operation(summary = "게임 결과 삭제", description = "게스트 토큰 주인의 특정 게임 결과를 삭제한다.",
       responses = {
           @ApiResponse(responseCode = "204", description = "게임 결과 삭제 성공"),
           @ApiResponse(responseCode = "403", description = "인증 실패"),
