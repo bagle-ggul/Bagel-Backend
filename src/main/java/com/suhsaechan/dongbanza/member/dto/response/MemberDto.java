@@ -16,8 +16,6 @@ public class MemberDto {
 
   private String role;
 
-  private String status;
-
   private Integer totalScore;
 
   private String mbti;
@@ -25,7 +23,7 @@ public class MemberDto {
   private Integer totalRegressionCount;
 
   // Jackson이 상수명을 그대로 직렬화하므로 응답 JSON 형태는 기존과 동일하다.
-  // role·status처럼 String.valueOf()로 변환하면 null이 문자열 "null"로 새어나가 타입을 유지한다.
+  // role처럼 String.valueOf()로 변환하면 null이 문자열 "null"로 새어나가 타입을 유지한다.
   private GameProgress gameProgress;
 
   // 리프레시 토큰은 refresh_token 테이블이 정본이며 회원 응답에 노출할 이유가 없어 제거함
@@ -34,7 +32,6 @@ public class MemberDto {
         .id(member.getId())
         .characterName(member.getCharacterName())
         .role(String.valueOf(member.getRole()))
-        .status(String.valueOf(member.getStatus()))
         .totalScore(member.getTotalScore() != null ? member.getTotalScore() : 0)
         .mbti(member.getMbti())
         .totalRegressionCount(member.getTotalRegressionCount() != null ? member.getTotalRegressionCount() : 0)

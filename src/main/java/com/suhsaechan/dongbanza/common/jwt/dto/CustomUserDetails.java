@@ -1,6 +1,5 @@
 package com.suhsaechan.dongbanza.common.jwt.dto;
 
-import com.suhsaechan.dongbanza.member.domain.constants.MemberStatus;
 import com.suhsaechan.dongbanza.member.domain.entity.Member;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,8 +48,9 @@ public class CustomUserDetails implements UserDetails {
     return true;
   }
 
+  // 탈퇴·휴면 개념이 없는 게스트 구조라 항상 사용 가능
   @Override
   public boolean isEnabled() {
-    return member.getStatus() == MemberStatus.ACTIVE;
+    return true;
   }
 }

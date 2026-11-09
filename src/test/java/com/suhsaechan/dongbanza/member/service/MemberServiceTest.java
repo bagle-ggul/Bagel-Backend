@@ -10,7 +10,6 @@ import com.suhsaechan.dongbanza.common.jwt.service.JwtUtil;
 import com.suhsaechan.dongbanza.common.jwt.service.TokenService;
 import com.suhsaechan.dongbanza.member.domain.constants.GameProgress;
 import com.suhsaechan.dongbanza.member.domain.constants.MemberRole;
-import com.suhsaechan.dongbanza.member.domain.constants.MemberStatus;
 import com.suhsaechan.dongbanza.member.domain.entity.Member;
 import com.suhsaechan.dongbanza.member.dto.request.GuestStartForm;
 import com.suhsaechan.dongbanza.member.dto.response.GuestStartResponse;
@@ -93,7 +92,6 @@ class MemberServiceTest {
     assertThat(saved.getTotalRegressionCount()).isZero();
     assertThat(saved.getGameProgress()).isEqualTo(GameProgress.NOT_STARTED);
     assertThat(saved.getRole()).isEqualTo(MemberRole.USER);
-    assertThat(saved.getStatus()).isEqualTo(MemberStatus.ACTIVE);
   }
 
   @Test

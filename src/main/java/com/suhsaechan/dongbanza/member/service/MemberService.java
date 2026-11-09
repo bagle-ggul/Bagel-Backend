@@ -7,7 +7,6 @@ import com.suhsaechan.dongbanza.common.jwt.service.JwtUtil;
 import com.suhsaechan.dongbanza.common.jwt.service.TokenService;
 import com.suhsaechan.dongbanza.member.domain.constants.GameProgress;
 import com.suhsaechan.dongbanza.member.domain.constants.MemberRole;
-import com.suhsaechan.dongbanza.member.domain.constants.MemberStatus;
 import com.suhsaechan.dongbanza.member.domain.entity.Member;
 import com.suhsaechan.dongbanza.member.dto.request.GuestStartForm;
 import com.suhsaechan.dongbanza.member.dto.response.GuestStartResponse;
@@ -43,7 +42,6 @@ public class MemberService {
         .characterName(characterName)
         .mbti(form.getMbti())
         .role(MemberRole.USER)
-        .status(MemberStatus.ACTIVE)
         .totalScore(0) // 초기 호감도는 0으로 설정
         .totalRegressionCount(0) // 초기 회귀 횟수는 0으로 설정
         .gameProgress(GameProgress.NOT_STARTED) // 초기 게임 진행 상태

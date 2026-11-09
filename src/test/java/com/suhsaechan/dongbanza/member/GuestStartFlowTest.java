@@ -82,6 +82,14 @@ class GuestStartFlowTest {
   }
 
   @Test
+  @DisplayName("토큰 없이도 랭킹을 조회할 수 있다 (시작 전 홈 화면 노출)")
+  void allowsRankingWithoutToken() throws Exception {
+    mockMvc.perform(get("/api/game/ranking?page=0&size=5"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.rankings").isArray());
+  }
+
+  @Test
   @DisplayName("토큰 없이는 내 정보에 접근할 수 없다")
   void rejectsMyPageWithoutToken() throws Exception {
     mockMvc.perform(get("/api/my-page"))
